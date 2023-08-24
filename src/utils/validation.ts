@@ -1,13 +1,14 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 import * as dotenv from "dotenv";
+import { ObjectId } from "mongodb";
 
 dotenv.config();
 
 // Generate a JWT containing the user payload
 const cookie = process.env.TOKEN as string;
 
-export const verifyUser = (id: any, walletId: string) => {
+export const verifyUser = (id: ObjectId, walletId: string) => {
   const token = jwt.sign(
     {
       walletId,

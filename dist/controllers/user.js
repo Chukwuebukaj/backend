@@ -17,6 +17,7 @@ const cloudinary_1 = require("../utils/cloudinary");
 const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { walletId, fullName, businessName } = req.body;
     const validation = joiSchemas_1.userSchema.validate(req.body);
+    const getToken = process.env.TOKEN;
     try {
         if (validation.error) {
             return res
@@ -29,6 +30,7 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             let profilePicUrl;
             let businessLogoUrl;
             if (req.files) {
+                console.log("Files", req.files);
                 const valuesArr = Object.values(req.files).flat();
                 if (valuesArr[0]) {
                     // Upload profile picture to Cloudinary
@@ -51,9 +53,15 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                     profilePic: profilePicUrl,
                     businessLogo: businessLogoUrl,
                 };
-                yield userResolver_1.userResolver.Mutation.createUser(null, newUser);
-                const message = "User signed up successfully";
-                return res.status(201).json({ message, newUser });
+                const user = yield userResolver_1.userResolver.Mutation.createUser(null, newUser);
+                const token = (0, validation_1.verifyUser)(user._id, user.walletId);
+                res.cookie(getToken, token, {
+                    httpOnly: true,
+                    maxAge: 60 * 60 * 24 * 1000 * 7,
+                });
+                return res
+                    .status(201)
+                    .json({ message: "User signed up successfully", user, token });
             }
         }
     }
@@ -78,7 +86,7 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         else {
             const id = user._id;
-            const token = (0, validation_1.verifyUser)(id, walletId);
+            const token = (0, validation_1.verifyUser)(user._id, user.walletId);
             res.cookie(getToken, token, {
                 httpOnly: true,
                 maxAge: 60 * 60 * 24 * 1000 * 7,

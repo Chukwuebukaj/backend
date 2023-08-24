@@ -9,6 +9,7 @@ import { UserDocument } from "../models/user";
 export const createUser = async (req: Request | any, res: Response) => {
   const { walletId, fullName, businessName }: UserDocument = req.body;
   const validation: ValidationResult = userSchema.validate(req.body);
+  const getToken = process.env.TOKEN as string;
   try {
     if (validation.error) {
       return res
@@ -20,6 +21,8 @@ export const createUser = async (req: Request | any, res: Response) => {
       let profilePicUrl;
       let businessLogoUrl;
       if (req.files) {
+        console.log("Files", req.files);
+
         const valuesArr: any[] = Object.values(req.files).flat();
         if (valuesArr[0]) {
           // Upload profile picture to Cloudinary
@@ -41,9 +44,15 @@ export const createUser = async (req: Request | any, res: Response) => {
           profilePic: profilePicUrl,
           businessLogo: businessLogoUrl,
         };
-        await userResolver.Mutation.createUser(null, newUser);
-        const message = "User signed up successfully";
-        return res.status(201).json({ message, newUser });
+        const user = await userResolver.Mutation.createUser(null, newUser);
+        const token = verifyUser(user._id, user.walletId);
+        res.cookie(getToken, token, {
+          httpOnly: true,
+          maxAge: 60 * 60 * 24 * 1000 * 7,
+        });
+        return res
+          .status(201)
+          .json({ message: "User signed up successfully", user, token });
       }
     }
   } catch (error) {
@@ -66,7 +75,7 @@ export const loginUser = async (req: Request, res: Response) => {
       return res.status(400).json(user.error);
     } else {
       const id = user._id;
-      const token = verifyUser(id, walletId);
+      const token = verifyUser(user._id, user.walletId);
       res.cookie(getToken, token, {
         httpOnly: true,
         maxAge: 60 * 60 * 24 * 1000 * 7,

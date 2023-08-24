@@ -45,7 +45,8 @@ export const userResolver = {
         businessLogo,
         profilePic,
       });
-      await newUser.save();
+      const savedUser = await newUser.save();
+      return savedUser;
     },
 
     loginUser: async (

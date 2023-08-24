@@ -38,7 +38,8 @@ exports.userResolver = {
                 businessLogo,
                 profilePic,
             });
-            yield newUser.save();
+            const savedUser = yield newUser.save();
+            return savedUser;
         }),
         loginUser: (_root, args) => __awaiter(void 0, void 0, void 0, function* () {
             const { walletId } = args;

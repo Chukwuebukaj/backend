@@ -1,1 +1,32 @@
-node_modules
+# Node.js / Express
+node_modules/
+dist/
+.env
+
+# TypeScript
+*.tsbuildinfo
+
+# Yarn
+yarn-error.log
+
+# MongoDB
+.env.local
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.code-workspace
+
+# Logs
+logs/
+*.log
+
+# Compiled Output
+*.js
+*.map
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
