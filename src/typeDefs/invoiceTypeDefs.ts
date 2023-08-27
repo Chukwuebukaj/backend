@@ -1,51 +1,6 @@
 import { gql } from "apollo-server-express";
 
 const typeDefs = gql`
-  type Invoice {
-    _id: ID!
-    userId: String!
-    invoiceAddress: String!
-    amount: Float!
-    currency: String!
-    paymentType: String!
-    status: String!
-    clientName: String!
-    clientEmail: String!
-    services: [Service]!
-    startDate: String!
-    endDate: String!
-    duration: Float!
-    installment: Float!
-    initialDeposit: Float!
-    discount: Float!
-    termsAndConditions: [String]!
-  }
-
-  input InvoiceInput {
-    invoiceAddress: String!
-    userId: String!
-    amount: Float!
-    currency: String!
-    paymentType: String!
-    status: String!
-    clientName: String!
-    clientEmail: String!
-    services: [ServiceInput]!
-    startDate: String!
-    endDate: String!
-    duration: Float!
-    installment: Float!
-    initialDeposit: Float!
-    discount: Float!
-    termsAndConditions: [String]!
-  }
-
-  type Query {
-    invoices: [Invoice!]!
-    invoice(invoiceAddress: String!): Invoice!
-    invoiceById(_id: ID!): Invoice!
-  }
-
   type Service {
     title: String!
     description: String!
@@ -53,11 +8,72 @@ const typeDefs = gql`
     rate: Float!
   }
 
+  type Invoice {
+    _id: ID!
+    userId: String!
+    invoiceAddress: String!
+    clientName: String!
+    clientEmail: String!
+    startDate: String!
+    endDate: String!
+    duration: String!
+    paymentType: String!
+    currency: String!
+    services: [Service]!
+    amount: Float!
+    bankName: String!
+    accountNumber: Float!
+    installment: Float!
+    initialDepositPercentage: String!
+    initialDeposit: Float!
+    taxPercentage: String!
+    tax: Float!
+    discountPercentage: String!
+    discount: Float!
+    termsAndConditions: [String]!
+    accepted: Boolean!
+    status: String!
+    createdAt: String!
+    updatedAt: String!
+  }
+
   input ServiceInput {
     title: String!
     description: String!
     quantity: Float!
     rate: Float!
+  }
+
+  input InvoiceInput {
+    invoiceAddress: String!
+    userId: String!
+    clientName: String!
+    clientEmail: String!
+    startDate: String!
+    endDate: String!
+    duration: String!
+    paymentType: String!
+    currency: String!
+    services: [ServiceInput]!
+    amount: Float!
+    bankName: String!
+    accountNumber: Float!
+    installment: Float!
+    initialDepositPercentage: String!
+    initialDeposit: Float!
+    taxPercentage: String!
+    tax: Float!
+    discountPercentage: String!
+    discount: Float!
+    termsAndConditions: [String]!
+    accepted: Boolean!
+    status: String!
+  }
+
+  type Query {
+    invoices: [Invoice!]!
+    invoice(invoiceAddress: String!): Invoice!
+    invoiceById(_id: ID!): Invoice!
   }
 
   type Mutation {

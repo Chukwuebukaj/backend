@@ -18,10 +18,10 @@ export const invoiceResolver = {
     },
     invoiceById: async (
       _root: any,
-      userId: string
+      { userId }: any
     ): Promise<InvoiceDocument[] | null> => {
       try {
-        return await InvoiceModel.find({ userId });
+        return await InvoiceModel.find({ userId }).exec();
       } catch (error: any) {
         return error;
       }
