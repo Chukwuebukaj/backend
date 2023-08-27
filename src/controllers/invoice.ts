@@ -94,10 +94,9 @@ export const getUserInvoices = async (req: Request, res: Response) => {
   try {
     const loggedInUser: any = req.user;
     const userId = loggedInUser?.id;
-    const requiredInvoices = await invoiceResolver.Query.invoiceById(
-      null,
-      userId
-    );
+    const requiredInvoices = await invoiceResolver.Query.invoiceById(null, {
+      userId,
+    });
     if (!requiredInvoices) {
       return res
         .status(404)
