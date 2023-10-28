@@ -5,6 +5,7 @@ interface UserProps {
   walletId?: string;
   fullName?: string;
   businessName?: string;
+  email: string;
   profilePic?: string;
   businessLogo?: string;
 }
@@ -19,22 +20,20 @@ export const userResolver = {
     },
   },
   Mutation: {
-    createUser: async (
-      _root: any,
-      args: {
-        walletId: string;
-        fullName: string;
-        businessName: string;
-        profilePic?: string;
-        businessLogo?: string;
-      }
-    ) => {
-      const { walletId, fullName, businessName, businessLogo, profilePic } =
-        args;
+    createUser: async (_root: any, args: UserProps) => {
+      const {
+        walletId,
+        fullName,
+        businessName,
+        email,
+        businessLogo,
+        profilePic,
+      } = args;
       await userSchema.validateAsync({
         walletId,
         fullName,
         businessName,
+        email,
         businessLogo,
         profilePic,
       });
@@ -42,6 +41,7 @@ export const userResolver = {
         walletId,
         fullName,
         businessName,
+        email,
         businessLogo,
         profilePic,
       });

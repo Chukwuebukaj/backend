@@ -45,6 +45,7 @@ export const userSchema = Joi.object({
       return value;
     }),
   fullName: Joi.string().required(),
+  email: Joi.string().email().required(),
   profilePic: Joi.string().allow(""),
   businessName: Joi.string().required(),
   businessLogo: Joi.string().allow(""),

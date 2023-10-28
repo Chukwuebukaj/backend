@@ -1,10 +1,9 @@
-import { gql } from "apollo-server-express";
-
-const userTypeDefs = gql`
+const userTypeDefs = `#graphql
   type User {
     id: ID!
     walletId: String!
     fullName: String!
+    email: String!
     businessName: String!
     profilePic: String
     businessLogo: String
@@ -14,6 +13,7 @@ const userTypeDefs = gql`
     id: ID!
     walletId: String!
     fullName: String!
+    email: String!
     businessName: String!
     profilePic: String
     businessLogo: String

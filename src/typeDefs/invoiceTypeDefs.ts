@@ -1,6 +1,4 @@
-import { gql } from "apollo-server-express";
-
-const typeDefs = gql`
+const typeDefs = `#graphql
   type Service {
     title: String!
     description: String!

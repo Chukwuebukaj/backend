@@ -1,5 +1,6 @@
 import express from "express";
-import { ApolloServer } from "apollo-server-express";
+import { ApolloServer } from "@apollo/server";
+import { startStandaloneServer } from "@apollo/server/standalone";
 import mongoose, { ConnectOptions } from "mongoose";
 import { invoiceResolver } from "./resolvers/invoiceResolver";
 import { userResolver } from "./resolvers/userResolver";
@@ -14,6 +15,9 @@ import session from "express-session";
 import userRoutes from "./routes/user";
 import invoiceRoutes from "./routes/invoice";
 import { cloudinaryMiddleware } from "./utils/cloudinary";
+import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
+import http from "http";
+
 import jwt from "jsonwebtoken"; // Import the JWT library
 
 interface MongooseOpts {
@@ -64,6 +68,7 @@ const mongooseOpts: ConnectOptions & Partial<MongooseOpts> = {
 };
 
 mongoose.connect(MONGODB_URI as string, mongooseOpts);
+const httpServer = http.createServer(app);
 
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
@@ -78,26 +83,12 @@ const startApolloServer = async () => {
   const server = new ApolloServer({
     typeDefs: [userTypeDefs, invoiceTypeDefs],
     resolvers: [invoiceResolver, userResolver],
-    context: ({ req }) => {
-      // Get the token from the request headers
-      const token = req.headers.authorization || "";
-
-      // Verify and decode the token
-      try {
-        const verifiedUser = jwt.verify(
-          token.replace("Bearer ", ""),
-          process.env.JWT_SECRET as string
-        );
-        return { authentication: true, user: verifiedUser };
-      } catch (error) {
-        return { authentication: false, user: null };
-      }
-    },
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   });
 
   await server.start();
 
-  server.applyMiddleware({ app });
+  // server.applyMiddleware({ app });
 };
 
 startApolloServer().catch((err) =>
