@@ -25,7 +25,7 @@ COPY . .
 EXPOSE 3000
 
 # Define the command to run your application in watch mode
-CMD ["yarn", "start"]
+CMD ["yarn", "dev"]
 
 # Optionally, you can provide a second CMD to start the development server
 # CMD ["yarn", "dev"]
