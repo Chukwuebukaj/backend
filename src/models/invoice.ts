@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
+import { Schema, model, Document } from "mongoose";
 
 export interface Service {
   title: string;
@@ -85,7 +85,4 @@ const InvoiceSchema = new Schema<InvoiceDocument>(
   }
 );
 
-export const InvoiceModel = mongoose.model<InvoiceDocument>(
-  "Invoice",
-  InvoiceSchema
-);
+export const InvoiceModel = model<InvoiceDocument>("Invoice", InvoiceSchema);

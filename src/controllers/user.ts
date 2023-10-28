@@ -7,7 +7,10 @@ import { uploadToCloudinary } from "../utils/cloudinary";
 import { UserDocument } from "../models/user";
 
 export const createUser = async (req: Request | any, res: Response) => {
-  const { walletId, fullName, businessName }: UserDocument = req.body;
+  console.log(req.body);
+  console.log(req.files);
+  
+  const { walletId, fullName, businessName, email }: UserDocument = req.body;
   const validation: ValidationResult = userSchema.validate(req.body);
   const getToken = process.env.TOKEN as string;
   try {
@@ -41,6 +44,7 @@ export const createUser = async (req: Request | any, res: Response) => {
           walletId,
           fullName,
           businessName,
+          email,
           profilePic: profilePicUrl,
           businessLogo: businessLogoUrl,
         };
@@ -89,23 +93,37 @@ export const loginUser = async (req: Request, res: Response) => {
   }
 };
 
-export const updateUser = async (req: Request, res: Response) => {
-  const loggedInUser = req.user;
-  const { id } = req.params;
-  const { walletId, fullName, businessName } = req.body;
-  let profilePicUrl;
-  let businessLogoUrl;
-  if (req.files) {
-    const valuesArr: { path: string }[] = Object.values(req.files).flat();
-    profilePicUrl = valuesArr[0].path;
-    businessLogoUrl = valuesArr[1].path;
-  }
-
+export const updateUser = async (req: Request | any, res: Response) => {
   try {
+    console.log('Hello');
+    console.log(req.user);
+    console.log(req.files);
+    console.log(req.files);
+  
+    const loggedInUser: any = req.user;
+    const { id } = loggedInUser;
+    const { walletId, fullName, businessName, email } = req.body;
+    let profilePicUrl;
+    let businessLogoUrl;
+    if (Object.values(req.files).length > 0) {
+      // Upload profile picture to Cloudinary
+      console.log(req.files);
+
+      if (req.files.profilePic[0]) {
+        profilePicUrl = await uploadToCloudinary(req.files.profilePic[0]);
+      }
+      console.log("Here2");
+      // Upload business logo to Cloudinary
+      if (req.files?.businessLogo[0]) {
+        businessLogoUrl = await uploadToCloudinary(req.files?.businessLogo[0]);
+      }
+    }
+
     const { error } = await userSchema.validateAsync({
       walletId,
       fullName,
       businessName,
+      email,
       profilePic: profilePicUrl,
       businessLogo: businessLogoUrl,
     });
@@ -120,16 +138,17 @@ export const updateUser = async (req: Request, res: Response) => {
       walletId,
       fullName,
       businessName,
+      email,
       businessLogo: businessLogoUrl,
       profilePic: profilePicUrl,
     };
-    await userResolver.Mutation.updateUser(null, {
+    const updated = await userResolver.Mutation.updateUser(null, {
       _id: id,
       input: updatedUser,
     });
     return res
       .status(200)
-      .json({ message: "User updated successfully", updatedUser });
+      .json({ message: "User updated successfully", updated });
   } catch (error) {
     return res.status(500).json(error);
   }
